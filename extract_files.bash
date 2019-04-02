@@ -36,3 +36,9 @@ tar -xzf ucec_tcga_pan_can_atlas_2018.tar.gz -C ucec/
 tar -xzf ucs_tcga_pan_can_atlas_2018.tar.gz -C ucs/
 tar -xzf uvm_tcga_pan_can_atlas_2018.tar.gz -C uvm/
 
+
+
+
+more idat_filename_case.txt |sort -k1|grep COAD|cut -f1|perl -pe 's/\,/\n/g'|uniq|perl -pe 's/\-/\t/g'| \
+cut -f 1,2,3,4|perl -pe 's/\t/\-/g'|perl -pe 's/\w\n/\n/g' > coad_450k_ids.txt
+
