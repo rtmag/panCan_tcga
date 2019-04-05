@@ -51,7 +51,12 @@ more id_mutation_mskcc.txt|grep -f coad_450k_ids2.txt|wc -l
 # check 
 more id_mutation_mskcc.txt|grep -f coadread_cases_all.txt
 
+# Create a list of all genes mutated in cancer samples. || look at difference between msk and extended
 
+# meta info of patients; check if got the same dimensions for all TCGA
+data_clinical_patient.txt
 
-
+#CNA
+data_CNA.txt
+Values: -2 = homozygous deletion; -1 = hemizygous deletion; 0 = neutral / no change; 1 = gain; 2 = high level amplification.
 
