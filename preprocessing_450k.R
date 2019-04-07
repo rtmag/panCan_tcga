@@ -1,4 +1,7 @@
 setwd("/root/TCGA/Rnbeads")
+suppressMessages(library(RnBeads))
+options(bitmapType="cairo")
+options(scipen=999)
 
 ## preprocessing
 #idat files
@@ -47,7 +50,7 @@ for(i in 1:length(projects)){
   
   # Original mutation matrix
   mut.file.ix <- mut.file[mut.file$Tumor_Sample_Barcode %in% mut.id.withMutation,]
-  write.csv(mut.file.ix,paste(projects[i],"/",projects[i],"_mutation_original_table.csv",sep=""))
+  write.csv(mut.file.ix,paste(projects[i],"/",projects[i],"_mutation_original_table.csv",sep=""),row.names=F)
   
   # Mutation Matrix
   mut.file.ix <- mut.file.ix[mut.file.ix$Variant_Classification %in% c("Missense_Mutation","Frame_Shift_Del","Nonsense_Mutation",
@@ -58,12 +61,12 @@ for(i in 1:length(projects)){
   colnames(mut.mat) <- master.gene.list
   mut.mat.ix <- unique(mut.file.ix[,c(1,3)])  
   for(ix in 1:dim(mut.mat.ix)[1]){ mut.mat[ mut.id.withMutation %in% mut.mat.ix[ix,2] , master.gene.list %in% mut.mat.ix[ix,1] ] = 1 }
-  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix.csv",sep=""))
+  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix.csv",sep=""),row.names=F)
   if(length(meth.id.normal)>0){ tmp <- matrix(5, nrow=length(meth.id.normal), ncol=length(master.gene.list) )
                                 rownames(tmp) <- colnames(meth.id.normal); 
                                 colnames(tmp) <- colnames(master.gene.list); 
                                mut.mat <- rbind( mut.mat, tmp) }
-  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix_withNormal.csv",sep=""))
+  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix_withNormal.csv",sep=""),row.names=F)
   
   # TP53 information matrix
   mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
@@ -81,12 +84,12 @@ for(i in 1:length(projects)){
   mut.file.p53[,2][is.na(mut.file.p53[,2])] <- "WT"
   mut.file.p53[,3] <- as.character(mut.file.p53[,3])
   mut.file.p53[,3][is.na(mut.file.p53[,3])] <- "WT"
-  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
+  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""),row.names=F)
   if(length(meth.id.normal)>0){ tmp <- cbind(meth.id.normal,"NORMAL","NORMAL");
                                 colnames(tmp) <- colnames(mut.file.p53); 
                                mut.file.p53 <- rbind( mut.file.p53, tmp) }
   rownames(mut.file.p53) <- NULL
-  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info_withNormal.csv",sep=""))
+  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info_withNormal.csv",sep=""),row.names=F)
   
   # CNA table
   CNA <- paste(panCan.dir[i],"/data_CNA.txt",sep="")
@@ -107,27 +110,59 @@ for(i in 1:length(projects)){
   clinical.patient.id <- paste(clinical.patient.id[,1],clinical.patient.id[,2],clinical.patient.id[,3],sep="-")
   clinical <- clinical[match(clinical.patient.id, as.character(clinical$PATIENT_ID) ),]
   clinical$PATIENT_ID <- meth.id.withMutation
-  write.csv(clinical,paste(projects[i],"/",projects[i],"_clinical_info.csv",sep=""))
+  write.csv(clinical,paste(projects[i],"/",projects[i],"_clinical_info.csv",sep=""),row.names=F)
+
+  ##############################
+
+  # Sample annotation creation
+  master.meth.id <- c(meth.id.withMutation,meth.id.normal)
+  sentrix <- as.character(i.link.list$file_name)
+  sentrix <- gsub("_Red.idat","",sentrix)
+  sentrix <- gsub("_Grn.idat","",sentrix)
+  sentrix <- data.frame( do.call( rbind, strsplit( sentrix, '_' ) ) )
+  sentrix <- unique(cbind(i.link.list[,1],sentrix))
+  sentrix <- sentrix[match(master.meth.id,sentrix[,1]),]
+  sample.annotation <- data.frame(Sample_ID=as.character(sentrix[,1]),
+                                  Sentrix_ID=as.character(sentrix[,2]),
+                                  Sentrix_Position=as.character(sentrix[,3]) )
+  write.csv(sample.annotation,paste(projects[i],"/",projects[i],"_sample_annotation.csv",sep=""),row.names=F)
+
+  # File path
+  sample.annotation <- file.path(paste(projects[i],"/",projects[i],"_sample_annotation.csv",sep=""))
+  rnb.options(import.table.separator=",")
+
+  # Report directory
+  command <- paste("rm -fr ",projects[i],"/","RnBeads_normalization/",sep="")
+  system(command)
+  report.dir <- file.path(paste(projects[i],"/","RnBeads_normalization/",sep=""))
+
+  # Vanilla parameters
+  rnb.options(identifiers.column="Sample_ID")
+
+  # Multiprocess
+  num.cores <- 20
+  parallel.setup(num.cores)
+  
+  #idat files
+  idat.dir <- file.path("/root/TCGA/tcgaBiolink")
+
+  data.source <- c(idat.dir, sample.annotation)
+  result <- rnb.run.import(data.source=data.source,data.type="infinium.idat.dir", dir.reports=report.dir)
+  rnb.set.norm <- rnb.execute.normalization(result$rnb.set, method="swan",bgcorr.method="methylumi.noob")
+
+  
+  save.rnb.set(rnb.set.norm,path=paste(projects[i],"/","RnBeads_normalization/rnb.set.norm.RData",sep=""))
+  
+  meth.norm<-meth(rnb.set.norm)
+  colnames(meth.norm) = as.character(rnb.set.norm@pheno[,1])
+  rownames(meth.norm) = rownames(rnb.set.norm@sites)
+  saveRDS(meth.norm, paste(projects[i],"/","RnBeads_normalization/betaVALUES.rds",sep=""))
+
+  mval.norm <- mval(rnb.set.norm,row.names=T)
+  colnames(mval.norm) = as.character(rnb.set.norm@pheno[,1])
+  rownames(mval.norm) = rownames(rnb.set.norm@sites)
+  saveRDS(mval.norm, paste(projects[i],"/","RnBeads_normalization/mVALUES.rds",sep=""))
 }
-##############################
 
-# Sample annotation
-sample.annotation <- file.path("/home/rtm/vivek/navi/EPIC/rnbeads_sample_sheet.csv")
-rnb.options(import.table.separator=",")
 
-# Report directory
-system("rm -fr /home/rtm/vivek/navi/EPIC/RnBeads/RnBeads_normalization")
-report.dir <- file.path("/home/rtm/vivek/navi/EPIC/RnBeads/RnBeads_normalization")
-
-# Vanilla parameters
-rnb.options(identifiers.column="Sample_ID")
-
-# Multiprocess
-num.cores <- 20
-parallel.setup(num.cores)
-
-data.source <- c(idat.dir, sample.annotation)
-result <- rnb.run.import(data.source=data.source,data.type="infinium.idat.dir", dir.reports=report.dir)
-rnb.set.norm <- rnb.execute.normalization(result$rnb.set, method="swan",bgcorr.method="enmix.oob")
-
-save.rnb.set(rnb.set.norm,path="/home/rtm/vivek/navi/EPIC/RnBeads/RnBeads_normalization/rnb.set.norm.RData")
+########################
