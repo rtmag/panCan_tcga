@@ -23,18 +23,16 @@ for(i in 1:length(projects)){
   
   #### subset samples with mutation information ####
   mut.file <- paste(panCan.dir[i],"/data_mutations_mskcc.txt",sep="")
-  mut.file <- paste("cut -f1,9,10,17,40 ",mut.file)
+  mut.file <- paste("cut -f1,10,17,40 ",mut.file)
+  mut.file <- read.table(pipe(mut.file),sep="\t",header=T,quote="")
   
-  x = read.table(pipe(mut.file),sep=",",header=T)
-  x = read.table(pipe("cut -f1,9,10,17,62 /root/TCGA/panCancer_2018/coadread/data_mutations_mskcc.txt|perl -pe 's/\\'/_/g'"),sep=",",header=T)
-
-    x = read.table("/root/TCGA/panCancer_2018/test/lol2.txt"),sep="\t",header=T)
-
+  meth.id <- unique(as.character(i.link.list$cases))
+  meth.id <- data.frame( do.call( rbind, strsplit( meth.id, '-' ) ) )
+  substr(meth.id[,4], 1, nchar(meth.id[,4])-1) 
   
-  tx=(cbind(as.character(x$Hugo_Symbol),as.character(x$SYMBOL),as.character(x$Tumor_Sample_Barcode)))
-
-  
-  tx= tx [as.character(x$Hugo_Symbol)!=as.character(x$SYMBOL),]
+  do.call(rbind, 
+   
+ strsplit(as.character(head(i.link.list$cases)),split='-', fixed=TRUE)
   
 ##############################
 
