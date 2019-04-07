@@ -105,8 +105,10 @@ for(i in 1:length(projects)){
   clinical <- read.table(pipe(clinical),sep="\t",header=T,quote="")
   clinical.patient.id <- data.frame( do.call( rbind, strsplit( mut.id.withMutation, '-' ) ) )
   clinical.patient.id <- paste(clinical.patient.id[,1],clinical.patient.id[,2],clinical.patient.id[,3],sep="-")
-  clinical$PATIENT_ID
-  
+  clinical <- clinical[match(clinical.patient.id, as.character(clinical$PATIENT_ID) ),]
+  clinical$PATIENT_ID <- meth.id.withMutation
+  write.csv(clinical,paste(projects[i],"/",projects[i],"_clinical_info.csv",sep=""))
+}
 ##############################
 
 # Sample annotation
