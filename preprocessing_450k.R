@@ -14,8 +14,7 @@ link.list <- read.table("/root/TCGA/tcgaBiolink/idat_filename_case.txt",header=T
 link.list <- link.list[grep(",",link.list$cases,invert=TRUE),]
 # get project names
 projects <- sort(unique(gsub("TCGA\\-","",link.list$project,perl=TRUE)))
-# Make sure it
-matches the panCan data
+# Make sure it matches the panCan data
 panCan.dir <- list.dirs(path = "/root/TCGA/panCancer_2018", full.names = TRUE, recursive = FALSE)
 for(i in 1:length(projects)){  if(grep(tolower(projects[i]),panCan.dir) > 0){print(paste(projects[i],": OK"))}  }
 
