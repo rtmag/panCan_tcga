@@ -52,6 +52,12 @@ for(i in 1:length(projects)){
   mut.file.ix <- mut.file.ix[mut.file.ix$Variant_Classification %in% c("Missense_Mutation","Frame_Shift_Del","Nonsense_Mutation",
                                             "Nonstop_Mutation","In_Frame_Del","Frame_Shift_Ins","Nonstop_Mutation"),]
   
+  mut.mat <- matrix(0, nrow=length(meth.id.withMutation), ncol=length(master.gene.list) )
+  rownames(mut.mat) <- meth.id.withMutation
+  colnames(mut.mat) <- master.gene.list
+  mut.mat.ix <- unique(mut.file.ix[,c(1,3)])  
+  for(ix in 1:dim(mut.mat.ix)[1]){ mut.mat[ mut.id.withMutation %in% mut.mat.ix[ix,2] , master.gene.list %in% mut.mat.ix[ix,1] ] = 1 }
+  
   # TP53 information matrix  
   mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
   mut.file.p53 <- unique(mut.file.p53)
@@ -73,8 +79,6 @@ for(i in 1:length(projects)){
                                mut.file.p53 <- rbind( mut.file.p53, tmp) }
   rownames(mut.file.p53) <- NULL
   write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
- 
-  
   
   # CNA table
   
