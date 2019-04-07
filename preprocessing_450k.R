@@ -57,6 +57,11 @@ for(i in 1:length(projects)){
   colnames(mut.mat) <- master.gene.list
   mut.mat.ix <- unique(mut.file.ix[,c(1,3)])  
   for(ix in 1:dim(mut.mat.ix)[1]){ mut.mat[ mut.id.withMutation %in% mut.mat.ix[ix,2] , master.gene.list %in% mut.mat.ix[ix,1] ] = 1 }
+  if(length(meth.id.normal)>0){ tmp <- matrix(5, nrow=length(meth.id.normal), ncol=length(master.gene.list) )
+                                rownames(tmp) <- colnames(meth.id.normal); 
+                                colnames(tmp) <- colnames(master.gene.list); 
+                               mut.mat <- rbind( mut.mat, tmp) }
+  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix.csv",sep=""))
   
   # TP53 information matrix  
   mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
@@ -81,7 +86,11 @@ for(i in 1:length(projects)){
   write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
   
   # CNA table
-  
+  x <- read.table("data_CNA.txt",sep="\t",header=TRUE)
+  x <- x[!duplicated(x$Hugo_Symbol), ]
+  rownames(x) <- x$Hugo_Symbol
+  x <- x[,3:dim(x)[2]]
+  x <- t(x)
   # Clinical table
   
   
