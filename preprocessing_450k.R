@@ -37,10 +37,20 @@ for(i in 1:length(projects)){
   meth.id <- paste(meth.id[,1],meth.id[,2],meth.id[,3],sample.type,sep="-")
   
   meth.id.withMutation <- meth.id.original[meth.id %in% mut.file$Tumor_Sample_Barcode]
+  mut.id.withMutation <- meth.id[meth.id %in% mut.file$Tumor_Sample_Barcode]
   patient.id.withMutation <- patient.id[meth.id %in% mut.file$Tumor_Sample_Barcode]
   meth.id.normal <- meth.id.original[as.numeric(sample.type)>9 & as.numeric(sample.type)<20]
   
-  # Mutation table
+  # create project directory
+  system(paste("mkdir",projects[i]))
+  
+  # Mutation matrix
+  mut.file.ix <- mut.file[mut.file$Tumor_Sample_Barcode %in% mut.id.withMutation,]
+  
+  
+  sort(table(mut.file$Variant_Classification))
+  
+  tail(sort(table(paste(mut.file$Hugo_Symbol,mut.file$Tumor_Sample_Barcode))))
   
   
   # CNA table
