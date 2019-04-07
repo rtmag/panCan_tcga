@@ -26,7 +26,7 @@ master.gene.list <- as.character(master.gene.list[,1])
 #### Project-based processing ####
 for(i in 1:length(projects)){
   #project specific link.list
-  print("Parsing",projects[i],"Files")
+  print(paste("Parsing",projects[i],"Files"))
   
   i.link.list = link.list[grep(projects[i],link.list$project),]
   
@@ -114,7 +114,7 @@ for(i in 1:length(projects)){
   write.csv(clinical,paste(projects[i],"/",projects[i],"_clinical_info.csv",sep=""),row.names=F)
 
   ##############################
-  print("Starting 450K processing of",projects[i])
+  print(paste("Starting 450K processing of",projects[i]))
 
 
   # Sample annotation creation
