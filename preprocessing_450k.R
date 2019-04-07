@@ -57,13 +57,14 @@ for(i in 1:length(projects)){
   colnames(mut.mat) <- master.gene.list
   mut.mat.ix <- unique(mut.file.ix[,c(1,3)])  
   for(ix in 1:dim(mut.mat.ix)[1]){ mut.mat[ mut.id.withMutation %in% mut.mat.ix[ix,2] , master.gene.list %in% mut.mat.ix[ix,1] ] = 1 }
+  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix.csv",sep=""))
   if(length(meth.id.normal)>0){ tmp <- matrix(5, nrow=length(meth.id.normal), ncol=length(master.gene.list) )
                                 rownames(tmp) <- colnames(meth.id.normal); 
                                 colnames(tmp) <- colnames(master.gene.list); 
                                mut.mat <- rbind( mut.mat, tmp) }
-  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix.csv",sep=""))
+  write.csv(mut.mat,paste(projects[i],"/",projects[i],"_mutation_matrix_withNormal.csv",sep=""))
   
-  # TP53 information matrix  
+  # TP53 information matrix
   mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
   mut.file.p53 <- unique(mut.file.p53)
   
@@ -79,18 +80,24 @@ for(i in 1:length(projects)){
   mut.file.p53[,2][is.na(mut.file.p53[,2])] <- "WT"
   mut.file.p53[,3] <- as.character(mut.file.p53[,3])
   mut.file.p53[,3][is.na(mut.file.p53[,3])] <- "WT"
+  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
   if(length(meth.id.normal)>0){ tmp <- cbind(meth.id.normal,"NORMAL","NORMAL");
                                 colnames(tmp) <- colnames(mut.file.p53); 
                                mut.file.p53 <- rbind( mut.file.p53, tmp) }
   rownames(mut.file.p53) <- NULL
-  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
+  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info_withNormal.csv",sep=""))
   
   # CNA table
-  x <- read.table("data_CNA.txt",sep="\t",header=TRUE)
-  x <- x[!duplicated(x$Hugo_Symbol), ]
-  rownames(x) <- x$Hugo_Symbol
-  x <- x[,3:dim(x)[2]]
-  x <- t(x)
+  CNA <- paste(panCan.dir[i],"/data_CNA.txt",sep="")
+  CNA <- read.table(CNA,sep="\t",header=TRUE,quote="")
+  CNA <- CNA[!duplicated(CNA$Hugo_Symbol), ]
+  rownames(CNA) <- CNA$Hugo_Symbol
+  CNA <- CNA[,3:dim(CNA)[2]]
+  CNA <- t(CNA)
+  rownames(CNA) <- gsub("\\.","\\-",rownames(CNA),perl=TRUE)
+  CNA <- CNA[rownames(CNA) %in% mut.id.withMutation,]
+  write.csv(CNA,paste(projects[i],"/",projects[i],"_CNA_matrix.csv",sep=""))
+
   # Clinical table
   
   
