@@ -52,27 +52,27 @@ for(i in 1:length(projects)){
   mut.file.ix <- mut.file.ix[mut.file.ix$Variant_Classification %in% c("Missense_Mutation","Frame_Shift_Del","Nonsense_Mutation",
                                             "Nonstop_Mutation","In_Frame_Del","Frame_Shift_Ins","Nonstop_Mutation"),]
   
-  
-  
   # TP53 information matrix  
   mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
   mut.file.p53 <- unique(mut.file.p53)
   
   mut.file.p53 <- cbind(aggregate(as.character(Variant_Classification) ~ 
-                     as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = ","),
+                     as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = "||"),
            aggregate(as.character(HGVSp_Short) ~ 
-            as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = ",") )
+            as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = "||") )
   
-  mut.file.p53 <- data.frame(Tumor_Sample_Barcode=mut.file.p53[,1], Variant_Classification=mut.file.p53[,2], HGVSp_Short=mut.file.p53[,4])
-  
-
-  
-  
-  
-  
-  
-  sort(table(as.character(mut.file.ix[mut.file.ix$Hugo_Symbol %in% "TP53",3])))
-
+  mut.file.p53 <- data.frame(Tumor_Sample_Barcode=mut.file.p53[,1], Variant_Classification=mut.file.p53[,2],HGVSp_Short=mut.file.p53[,4] )
+  mut.file.p53 <- data.frame(meth.id.withMutation,mut.file.p53[match(mut.id.withMutation, as.character(mut.file.p53[,1]) ),])
+  mut.file.p53 <- mut.file.p53[,c(1,3,4)]
+  mut.file.p53[,2] <- as.character(mut.file.p53[,2])
+  mut.file.p53[,2][is.na(mut.file.p53[,2])] <- "WT"
+  mut.file.p53[,3] <- as.character(mut.file.p53[,3])
+  mut.file.p53[,3][is.na(mut.file.p53[,3])] <- "WT"
+  if(length(meth.id.normal)>0){ tmp <- cbind(meth.id.normal,"NORMAL","NORMAL");
+                                colnames(tmp) <- colnames(mut.file.p53); 
+                               mut.file.p53 <- rbind( mut.file.p53, tmp) }
+  rownames(mut.file.p53) <- NULL
+  write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info.csv",sep=""))
  
   
   
