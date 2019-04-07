@@ -44,13 +44,36 @@ for(i in 1:length(projects)){
   # create project directory
   system(paste("mkdir",projects[i]))
   
-  # Mutation matrix
+  # Original mutation matrix
   mut.file.ix <- mut.file[mut.file$Tumor_Sample_Barcode %in% mut.id.withMutation,]
+  write.csv(mut.file.ix,paste(projects[i],"/",projects[i],"_mutation_original_table.csv",sep=""))
+  
+  # Mutation Matrix
+  mut.file.ix <- mut.file.ix[mut.file.ix$Variant_Classification %in% c("Missense_Mutation","Frame_Shift_Del","Nonsense_Mutation",
+                                            "Nonstop_Mutation","In_Frame_Del","Frame_Shift_Ins","Nonstop_Mutation"),]
   
   
-  sort(table(mut.file$Variant_Classification))
   
-  tail(sort(table(paste(mut.file$Hugo_Symbol,mut.file$Tumor_Sample_Barcode))))
+  # TP53 information matrix  
+  mut.file.p53 <- mut.file.ix[mut.file.ix$Hugo_Symbol=="TP53",]
+  mut.file.p53 <- unique(mut.file.p53)
+  
+  mut.file.p53 <- cbind(aggregate(as.character(Variant_Classification) ~ 
+                     as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = ","),
+           aggregate(as.character(HGVSp_Short) ~ 
+            as.character(Tumor_Sample_Barcode), data = mut.file.p53,paste, collapse = ",") )
+  
+  mut.file.p53 <- data.frame(Tumor_Sample_Barcode=mut.file.p53[,1], Variant_Classification=mut.file.p53[,2], HGVSp_Short=mut.file.p53[,4])
+  
+
+  
+  
+  
+  
+  
+  sort(table(as.character(mut.file.ix[mut.file.ix$Hugo_Symbol %in% "TP53",3])))
+
+ 
   
   
   # CNA table
