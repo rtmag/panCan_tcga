@@ -11,7 +11,8 @@ link.list <- read.table("/root/TCGA/tcgaBiolink/idat_filename_case.txt",header=T
 link.list <- link.list[grep(",",link.list$cases,invert=TRUE),]
 # get project names
 projects <- sort(unique(gsub("TCGA\\-","",link.list$project,perl=TRUE)))
-# Make sure it matches the panCan data
+# Make sure it
+matches the panCan data
 panCan.dir <- list.dirs(path = "/root/TCGA/panCancer_2018", full.names = TRUE, recursive = FALSE)
 for(i in 1:length(projects)){  if(grep(tolower(projects[i]),panCan.dir) > 0){print(paste(projects[i],": OK"))}  }
 
@@ -99,8 +100,12 @@ for(i in 1:length(projects)){
   write.csv(CNA,paste(projects[i],"/",projects[i],"_CNA_matrix.csv",sep=""))
 
   # Clinical table
-  
-  
+  clinical <- paste(panCan.dir[i],"/data_clinical_patient.txt",sep="")
+  clinical <- paste("tail -n+5",clinical,"|cut -f 1,5,6,7,8,9,10,11,26,27,28,29,30")
+  clinical <- read.table(pipe(clinical),sep="\t",header=T,quote="")
+  clinical.patient.id <- data.frame( do.call( rbind, strsplit( mut.id.withMutation, '-' ) ) )
+  clinical.patient.id <- paste(clinical.patient.id[,1],clinical.patient.id[,2],clinical.patient.id[,3],sep="-")
+  clinical$PATIENT_ID
   
 ##############################
 
