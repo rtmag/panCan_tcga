@@ -154,7 +154,8 @@ for(i in 1:length(projects)){
   result <- rnb.run.import(data.source=data.source,data.type="infinium.idat.dir", dir.reports=report.dir)
   rnb.set.norm <- rnb.execute.normalization(result$rnb.set, method="swan",bgcorr.method="methylumi.noob")
 
-  save.rnb.set(rnb.set.norm,path=paste(projects[i],"/","RnBeads_normalization/rnb.set.norm_withNormal.RData",sep=""))
+  save.rnb.set(rnb.set.norm,
+               path=paste("/root/TCGA/Rnbeads/",projects[i],"/","RnBeads_normalization/rnb.set.norm_withNormal.RData",sep=""))
   
   meth.norm<-meth(rnb.set.norm)
   colnames(meth.norm) = as.character(rnb.set.norm@pheno[,1])
@@ -168,7 +169,8 @@ for(i in 1:length(projects)){
   
   if(length(meth.id.normal)>0){
     rnb.set.norm_noNormal=remove.samples(rnb.set.norm,samples(rnb.set.filtered)[which(mut.file.p53$Variant_Classification=="NORMAL")])
-    save.rnb.set(rnb.set.norm_noNormal,path=paste(projects[i],"/","RnBeads_normalization/rnb.set.norm.RData",sep=""))
+    save.rnb.set(rnb.set.norm_noNormal,
+                 path=paste("/root/TCGA/Rnbeads/",projects[i],"/","RnBeads_normalization/rnb.set.norm.RData",sep=""))
     
     meth.norm<-meth(rnb.set.norm)
     colnames(meth.norm) = as.character(rnb.set.norm@pheno[,1])
