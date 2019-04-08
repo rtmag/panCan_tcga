@@ -157,29 +157,21 @@ for(i in 1:length(projects)){
   save.rnb.set(rnb.set.norm,
                path=paste("/root/TCGA/Rnbeads/",projects[i],"/","RnBeads_normalization/rnb.set.norm_withNormal.RData",sep=""))
   
-  meth.norm<-meth(rnb.set.norm)
-  colnames(meth.norm) = as.character(rnb.set.norm@pheno[,1])
-  rownames(meth.norm) = rownames(rnb.set.norm@sites)
+  meth.norm<-meth(rnb.set.norm,row.names=T)
   saveRDS(meth.norm, paste(projects[i],"/","RnBeads_normalization/betaVALUES_withNormal.rds",sep=""))
 
   mval.norm <- mval(rnb.set.norm,row.names=T)
-  colnames(mval.norm) = as.character(rnb.set.norm@pheno[,1])
-  rownames(mval.norm) = rownames(rnb.set.norm@sites)
   saveRDS(mval.norm, paste(projects[i],"/","RnBeads_normalization/mVALUES_withNormal.rds",sep=""))
   
   if(length(meth.id.normal)>0){
-    rnb.set.norm_noNormal=remove.samples(rnb.set.norm,samples(rnb.set.filtered)[which(mut.file.p53$Variant_Classification=="NORMAL")])
+    rnb.set.norm_noNormal=remove.samples(rnb.set.norm,samples(rnb.set.norm)[which(mut.file.p53$Variant_Classification=="NORMAL")])
     save.rnb.set(rnb.set.norm_noNormal,
                  path=paste("/root/TCGA/Rnbeads/",projects[i],"/","RnBeads_normalization/rnb.set.norm.RData",sep=""))
     
-    meth.norm<-meth(rnb.set.norm)
-    colnames(meth.norm) = as.character(rnb.set.norm@pheno[,1])
-    rownames(meth.norm) = rownames(rnb.set.norm@sites)
+    meth.norm<-meth(rnb.set.norm_noNormal,row.names=T)
     saveRDS(meth.norm, paste(projects[i],"/","RnBeads_normalization/betaVALUES.rds",sep=""))
 
-    mval.norm <- mval(rnb.set.norm,row.names=T)
-    colnames(mval.norm) = as.character(rnb.set.norm@pheno[,1])
-    rownames(mval.norm) = rownames(rnb.set.norm@sites)
+    mval.norm <- mval(rnb.set.norm_noNormal,row.names=T)
     saveRDS(mval.norm, paste(projects[i],"/","RnBeads_normalization/mVALUES.rds",sep=""))
    }
     
