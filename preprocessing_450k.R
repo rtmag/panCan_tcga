@@ -185,7 +185,7 @@ for(i in 1:length(projects)){
     
   if(length(meth.id.normal)<1){
     cp.command <- paste("cp ",projects[i],"/","RnBeads_normalization/rnb.set.norm_withNormal.RData.zip ",projects[i],"/",
-          "RnBeads_normalization/rnb.set.norm.RData",sep="")
+          "RnBeads_normalization/rnb.set.norm.RData.zip",sep="")
     system(cp.command)
     
     cp.command <- paste("cp ",projects[i],"/","RnBeads_normalization/betaVALUES_withNormal.rds ",projects[i],"/",
