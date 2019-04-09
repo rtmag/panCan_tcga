@@ -22,7 +22,7 @@ clab=as.character(colores[track])
 
 pdf("450K_methylation_allProbes_mvalues_pca.pdf")
 plot(ir.pca$x[,1],ir.pca$x[,2],col=clab,xlab=paste("PC1:",round(sx$importance[2,1]*100,digits=1),"%"),
-     ylab=paste("PC2:",round(sx$importance[2,2]*100,digits=1),"%"),pch=21)
+     ylab=paste("PC2:",round(sx$importance[2,2]*100,digits=1),"%"),pch=19)
 legend("topright",legend=c("TUMOR","NORMAL"),fill=c("red","blue"), border=T, bty="n" )
 dev.off()
 
