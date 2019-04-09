@@ -1,6 +1,29 @@
 # TUMOR AND NORMAL PCA
 mval = readRDS("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/mVALUES_withNormal.rds")
 
+ir.pca <- prcomp(t(mval),
+                 center = TRUE,
+                 scale. = FALSE) 
+
+sx=summary(ir.pca)
+
+TUMOR = read.csv("/root/TCGA/Rnbeads/COAD/COAD_TP53_mutation_info_withNormal.csv",header=TRUE)
+TUMOR = as.character(TUMOR$Variant_Classification)
+TUMOR[TUMOR!="NORMAL"] = "TUMOR"
+
+track= TUMOR 
+track[track=="TUMOR"]=1
+track[track=="NORMAL"]=2
+track=as.numeric(track)
+colores=c("#ffb3ba","#baffc9")
+clab=as.character(colores[track])
+
+pdf("450K_methylation_allProbes_mvalues_pca.pdf")
+plot(ir.pca$x[,1],ir.pca$x[,2],col="",xlab=paste("PCA1:",round(sx$importance[2,1]*100,digits=1),"%"),
+     ylab=paste("PCA2:",round(sx$importance[2,2]*100,digits=1),"%"))
+legend("topright",legend=c("TUMOR","NORMAL"),fill=c("#ffb3ba","#baffc9"), border=T, bty="n" )
+dev.off()
+
 
 # Filters, differential CPG between tumor and normal
 suppressMessages(library(RnBeads))
@@ -9,7 +32,7 @@ options(scipen=999)
 rnb.set.norm=load.rnb.set("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/rnb.set.norm_withNormal.RData.zip")
 
 TUMOR = read.csv("/root/TCGA/Rnbeads/COAD/COAD_TP53_mutation_info_withNormal.csv",header=TRUE)
-TUMOR = as.character(tp53$Variant_Classification)
+TUMOR = as.character(TUMOR$Variant_Classification)
 TUMOR[TUMOR!="NORMAL"] = "TUMOR"
 rnb.set.norm@pheno = data.frame(rnb.set.norm@pheno, Tumor = TUMOR)
 
@@ -36,6 +59,11 @@ colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 meth.norm = readRDS("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/mVALUES_withNormal.rds")
 meth.norm.sig=meth.norm[which(dmc_table$diffmeth.p.adj.fdr<0.05),]
 meth.norm.sig = meth.norm.sig[complete.cases(meth.norm.sig),]
+saveRDS(meth.norm.sig,"beta_tumor_vs_normal_FDR5p.rds")
+
+mval.sig=mval[which(dmc_table$diffmeth.p.adj.fdr<0.05),]
+mval.sig = mval.sig[complete.cases(mval.sig),]
+saveRDS(mval.sig,"mval_tumor_vs_normal_FDR5p.rds")
 
 png("heatmap_TUMOR_VS_NORMAL_FDR5p.png",width= 3.25,
   height= 3.25,units="in",
