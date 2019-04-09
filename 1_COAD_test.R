@@ -1,7 +1,9 @@
 # TUMOR AND NORMAL PCA
 mval = readRDS("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/mVALUES_withNormal.rds")
 
-ir.pca <- prcomp(t(mval),
+mval.complete = mval[complete.cases(mval), ]
+
+ir.pca <- prcomp(t(mval.complete),
                  center = TRUE,
                  scale. = FALSE) 
 
