@@ -61,7 +61,7 @@ meth.norm.sig=meth.norm[which(dmc_table$diffmeth.p.adj.fdr<0.05),]
 meth.norm.sig = meth.norm.sig[complete.cases(meth.norm.sig),]
 saveRDS(meth.norm.sig,"beta_tumor_vs_normal_FDR5p.rds")
 
-mval.sig=mval[which(dmc_table$diffmeth.p.adj.fdr<0.05),]
+mval.sig=mval[which(dmc_table$diffmeth.p.adj.fdr<0.05),] # 228,166 cpg (total 485,577 cpg) - 46.98% cpg retained
 mval.sig = mval.sig[complete.cases(mval.sig),]
 saveRDS(mval.sig,"mval_tumor_vs_normal_FDR5p.rds")
 
