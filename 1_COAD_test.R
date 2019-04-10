@@ -96,3 +96,55 @@ mut.csum = colSums(mut)
 mut.10p = sort(mut.csum[ (mut.csum / dim(mut)[1]) > .10 ])
 mut_sig = mut[ , colnames(mut) %in% names(mut.10p)]
 saveRDS(mut_sig,"mut_matrix_10p_filtered.rds")
+
+#################################
+# CCA
+
+# CCA is not built for negative values
+
+# m1 step
+# screen -r m1_step
+library(vegan)
+beta = readRDS("beta_TUMORonly_tumor_vs_normal_FDR5p.rds")
+beta = t(beta)
+mut_sig = readRDS("mut_matrix_10p_filtered.rds")
+for(i in 1:dim(mut_sig)[2]){ mut_sig[,i] = factor(mut_sig[,i])}
+m1 <- cca(beta ~ ., data = mut_sig)
+m0 <- cca(beta ~ 1, data = mut_sig)
+m <- step(m0, scope=formula(m1), test="perm")
+
+# m0 step
+# screen -r m0_step
+library(vegan)
+beta = readRDS("beta_TUMORonly_tumor_vs_normal_FDR5p.rds")
+beta = t(beta)
+mut_sig = readRDS("mut_matrix_10p_filtered.rds")
+for(i in 1:dim(mut_sig)[2]){ mut_sig[,i] = factor(mut_sig[,i])}
+m1 <- cca(beta ~ ., data = mut_sig)
+m0 <- cca(beta ~ 1, data = mut_sig)
+mback <- step(m1, test="perm")
+#################################
+# mval m1 step
+# screen -r mval_m1_step
+library(vegan)
+mval = readRDS("mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
+mval = t(mval)
+mval = mval + abs(min(mval))
+mut_sig = readRDS("mut_matrix_10p_filtered.rds")
+for(i in 1:dim(mut_sig)[2]){ mut_sig[,i] = factor(mut_sig[,i])}
+m1 <- cca(mval ~ ., data = mut_sig)
+m0 <- cca(mval ~ 1, data = mut_sig)
+m <- step(m0, scope=formula(m1), test="perm")
+
+# mval m0 step
+# screen -r mval_m0_step
+library(vegan)
+mval = readRDS("mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
+mval = t(mval)
+mval = mval + abs(min(mval))
+mut_sig = readRDS("mut_matrix_10p_filtered.rds")
+for(i in 1:dim(mut_sig)[2]){ mut_sig[,i] = factor(mut_sig[,i])}
+m1 <- cca(mval ~ ., data = mut_sig)
+m0 <- cca(mval ~ 1, data = mut_sig)
+mback <- step(m1, test="perm")
+#################################
