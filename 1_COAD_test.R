@@ -74,9 +74,24 @@ labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",ColSideColors=cl
 legend("topright",legend=c("TUMOR","NORMAL"),fill=c("#ffb3ba","#baffc9"), border=T, bty="n" )
 dev.off()
 ##################################
+library(fastICA)
+
+meth.norm = readRDS("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/betaVALUES.rds")
+meth.norm.sig=meth.norm[which(dmc_table$diffmeth.p.adj.fdr<0.05),]
+meth.norm.sig = meth.norm.sig[complete.cases(meth.norm.sig),]
+saveRDS(meth.norm.sig,"beta_TUMORonly_tumor_vs_normal_FDR5p.rds")
+
+mval = readRDS("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/mVALUES.rds")
+mval.sig=mval[which(dmc_table$diffmeth.p.adj.fdr<0.05),] # 228,319 cpg (total 485,577 cpg) - 46.98% cpg retained
+mval.sig = mval.sig[complete.cases(mval.sig),]
+saveRDS(mval.sig,"mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
+
+
+##################################
 
 # Filter mutations that occur in at least 10% of the population
 mut = read.csv("/root/TCGA/Rnbeads/COAD/COAD_mutation_matrix.csv",header=TRUE)
 mut.csum = colSums(mut)
 mut.10p = sort(mut.csum[ (mut.csum / dim(mut)[1]) > .10 ])
 mut_sig = mut[ , colnames(mut) %in% names(mut.10p)]
+saveRDS(mut_sig,"mut_matrix_10p_filtered.rds")
