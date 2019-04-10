@@ -26,7 +26,6 @@ plot(ir.pca$x[,1],ir.pca$x[,2],col=clab,xlab=paste("PC1:",round(sx$importance[2,
 legend("topright",legend=c("TUMOR","NORMAL"),fill=c("red","blue"), border=T, bty="n" )
 dev.off()
 
-
 # Filters, differential CPG between tumor and normal
 suppressMessages(library(RnBeads))
 options(bitmapType="cairo")
