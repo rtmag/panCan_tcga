@@ -86,6 +86,7 @@ mval.sig=mval[which(dmc_table$diffmeth.p.adj.fdr<0.05),] # 228,319 cpg (total 48
 mval.sig = mval.sig[complete.cases(mval.sig),]
 saveRDS(mval.sig,"mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
 
+ica = fastICA(t(mval.sig), n.comp =5 , alg.typ = "parallel", fun = "logcosh", alpha = 1.0, method = "C", maxit = 200)
 
 ##################################
 
