@@ -32,7 +32,8 @@ for(i in 1:length(projects)){
   i.link.list = link.list[grep(projects[i],link.list$project),]
   
   #### subset samples with mutation information ####
-  mut.file <- paste(panCan.dir[i],"/data_mutations_mskcc.txt",sep="")
+  mut.file <- paste(grep(tolower(projects[i]),panCan.dir),"/data_mutations_mskcc.txt",sep="")
+  #mut.file <- paste(panCan.dir[i],"/data_mutations_mskcc.txt",sep="")
   mut.file <- paste("cut -f1,10,17,40 ",mut.file)
   mut.file <- read.table(pipe(mut.file),sep="\t",header=T,quote="")
   
