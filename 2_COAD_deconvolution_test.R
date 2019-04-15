@@ -4,8 +4,7 @@ options(bitmapType="cairo")
 options(scipen=999)
 #
 rnb.set.norm=load.rnb.set("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/rnb.set.norm_withNormal.RData.zip")
-rnb.set.filtered <- rnb.execute.context.removal(rnb.set.norm)$dataset
-rnb.set.filtered <- rnb.execute.sex.removal(rnb.set.filtered)$dataset
+rnb.set.filtered <- rnb.execute.sex.removal(rnb.set.norm)$dataset
 rnb.set.filtered <- rnb.execute.snp.removal(rnb.set.filtered, snp="any")$dataset
 rnb.set.filtered <- rnb.execute.na.removal(rnb.set.filtered)$dataset
 save.rnb.set(rnb.set.filtered,path="rnb.set.norm.filtered.RData")
