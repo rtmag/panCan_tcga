@@ -11,4 +11,6 @@ save.rnb.set(rnb.set.filtered,path="rnb.set.norm.filtered.RData")
 #
 beta <- meth(rnb.set.filtered,row.names=TRUE)
 beta <- beta[complete.cases(beta), ]
-beta.combat <- champ.runCombat(beta=beta,pd=myLoad$pd,batchname=c("Slide"))
+
+rnb.set.filtered@pheno$Sentrix_ID <- as.factor(rnb.set.filtered@pheno$Sentrix_ID)
+beta.combat <- champ.runCombat(beta=beta,pd=rnb.set.filtered@pheno,batchname=c("Sentrix_ID"))
