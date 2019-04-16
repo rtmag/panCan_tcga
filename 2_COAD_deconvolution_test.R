@@ -23,3 +23,15 @@ beta.combat <- champ.runCombat(beta=beta,pd=rnb.set.norm@pheno,batchname=c("Sent
 
 myLoad$pd$Slide <- as.factor(myLoad$pd$Slide)
 myCombat <- champ.runCombat(beta=myNorm,pd=myLoad$pd,batchname=c("Slide"),variablename="Sample_Group")
+
+meth.id <- data.frame( do.call( rbind, strsplit( as.character(rnb.set.norm@pheno$Sample_ID), '-' ) ) )
+rnb.set.norm@pheno = data.frame(rnb.set.norm@pheno, plateID = meth.id[,6])
+beta.combat <- champ.runCombat(beta=beta,pd=rnb.set.norm@pheno,batchname="Sentrix_ID",variablename="plateID")
+
+# test for file removal 
+x = read.table(pipe("grep -v ',' idat_filename_case.txt"),sep="\t",header=T)
+meth.id <- data.frame( do.call( rbind, strsplit( as.character(x$cases), '-' ) ) )
+
+sentrix = data.frame( do.call( rbind, strsplit( as.character(x$file_name), '_' ) ) )
+sentrix = as.character(sentrix[,1])
+
