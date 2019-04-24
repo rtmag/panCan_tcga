@@ -20,7 +20,22 @@ system( k_estimate_command )
 t_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_t_server.py --datafile betaVALUES.txt --k 11 --numsites 5000")
 system( t_estimate_command )
 
-results_fast <- refactor(betaVALUES.txt,2,t=500,stdth=0.01,out="demo_results_fast")
+#  chnge for editted version because original takes long to read files
+results <- refactor("betaVALUES.txt",11,t=2000,stdth=0.01,out="demo_results")
+
+
+############################################################################################################
+######### TEST REFACTOR
+# ORIGINAL
+source("/root/myPrograms/refactor/R/refactor.R")
+# EDITED
+source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
+#########
+ORIGINAL_res <- refactor("demo_datafile.txt",2,t=500,stdth=0.01,out="demo_results_fast_ori")
+
+beta = read.table("demo_datafile.txt",sep="\t",stringsAsFactors=FALSE)
+EDITED_res <- refactor(beta,2,t=500,stdth=0.01,out="demo_results_fast")
+
 
 ############################################################################################################
 rnb.set.norm=load.rnb.set("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/rnb.set.norm_withNormal.RData.zip")
