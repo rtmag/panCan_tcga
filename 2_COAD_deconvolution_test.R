@@ -17,6 +17,9 @@ write.table(betatxt,"betaVALUES.txt",sep="\t",quote=FALSE,row.names=FALSE)
 k_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_k_server.py --datafile betaVALUES.txt --max_k 15")
 system( k_estimate_command )
 
+t_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_t_server.py --datafile betaVALUES.txt --k 11 --numsites 15000")
+system( t_estimate_command )
+
 ############################################################################################################
 rnb.set.norm=load.rnb.set("/root/TCGA/Rnbeads/COAD/RnBeads_normalization/rnb.set.norm_withNormal.RData.zip")
 
