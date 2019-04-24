@@ -13,19 +13,50 @@ rnb.set.filtered <- load.rnb.set(path="/root/TCGA/1_COAD_test/refactor/rnb.set.n
 beta <- meth(rnb.set.filtered,row.names=TRUE)
 beta <- beta[complete.cases(beta), ]
 saveRDS(beta,"beta.filtered.rds")
+beta = readRDS("beta.filtered.rds")
+
+beta = beta[,grep("-11A-",colnames(beta),invert=TRUE)]
 
 betatxt <- data.frame(ID=rownames(beta),beta)
 write.table(betatxt,"betaVALUES.txt",sep="\t",quote=FALSE,row.names=FALSE)
 
 k_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_k_server.py --datafile betaVALUES.txt --max_k 15")
 system( k_estimate_command )
+system(" mv estimate_k_results.png estimate_k_beta_without_normals.png ")
 
-t_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_t_server.py --datafile betaVALUES.txt --k 11 --numsites 5000")
+t_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_t_server.py --datafile betaVALUES.txt --k 8 --numsites 3000")
 system( t_estimate_command )
+system(" mv estimate_t_results.png estimate_t_beta_without_normals.png ")
 
 #  chnge for editted version because original takes long to read files
-results <- refactor("betaVALUES.txt",11,t=2000,stdth=0.01,out="demo_results")
+source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
 
+betatxt1 = rbind(colnames(betatxt),betatxt)
+results_05 <- refactor("betaVALUES.txt",8,t=1000,stdth=0.05,out="res_without_normals_stdth.05")
+results_1 <- refactor("betaVALUES.txt",8,t=1000,stdth=0.1,out="res_without_normals_stdth.1")
+
+saveRDS(results_05,"res_without_normals_stdth.05.rds")
+saveRDS(results_1,"res_without_normals_stdth.1.rds")
+##############################################################################################################
+par(mfrow=c(2,2))
+results = readRDS("res_without_normals_stdth.05.rds")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+
+results = readRDS("res_without_normals_stdth.1.rds")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+
+beta = readRDS("beta.filtered.rds")
+beta = beta[,grep("-11A-",colnames(beta),invert=TRUE)]
+
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
+
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+
+pdf("heatmap_sigCPG.pdf")
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+##############################################################################################################
 refactorCA = read.table("demo_results.out.components.txt")
 refactorCpG = read.table("demo_results.out.rankedlist.txt")
 
@@ -51,7 +82,7 @@ dev.off()
 source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
 
 beta = readRDS("beta.filtered.rds")
-beta = beta[,!colnames(beta) %in% c("TCGA-D5-6536-01A-11D-1721-05","TCGA-D5-6924-01A-11D-1926-05")]
+beta = beta[,!colnames(beta) %in% c("TCGA-D5-6536-01A-11D-1721-05","TCGA-D5-6924-01A-11D-1926-05","TCGA-G4-6302-11A-01D-1721-05")]
 betatxt <- data.frame(ID=rownames(beta),beta)
 write.table(betatxt,"betaVALUES_without_outliers.txt",sep="\t",quote=FALSE,row.names=FALSE)
 
@@ -68,7 +99,10 @@ system(" mv estimate_t_results.png estimate_t_beta_without_outliers.png ")
 #########
 betatxt1 = rbind(colnames(betatxt),betatxt)
 results <- refactor(betatxt1,11,t=2000,stdth=0.01,out="refactor_without_outliers")
-
+###################
+results = readRDS("refactor_results_noOutlier.rds")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+text(results$refactor_components[,1],results$refactor_components[,2], labels=colnames(beta))
 
 ############################################################################################################
 ######### TEST REFACTOR
