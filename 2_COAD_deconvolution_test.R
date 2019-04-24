@@ -66,6 +66,8 @@ system( t_estimate_command )
 system(" mv estimate_t_results.png estimate_t_beta_without_outliers.png ")
 
 #########
+betatxt1 = rbind(colnames(betatxt),betatxt)
+results <- refactor(betatxt1,11,t=2000,stdth=0.01,out="refactor_without_outliers")
 
 
 ############################################################################################################
