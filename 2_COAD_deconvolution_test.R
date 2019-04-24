@@ -6,12 +6,11 @@ options(scipen=999)
 # NAIVE TEST
 source("/root/myPrograms/refactor/R/refactor.R")
 
-save.rnb.set(rnb.set.filtered,path="rnb.set.norm.filtered.RData")
+rnb.set.filtered <- load.rnb.set(path="/root/TCGA/1_COAD_test/refactor/rnb.set.norm.filtered.RData.zip")
 beta <- meth(rnb.set.filtered,row.names=TRUE)
 beta <- beta[complete.cases(beta), ]
+saveRDS(beta,"beta.filtered.rds")
 
-
-beta <- readRDS("betaVALUES.rds")
 betatxt <- data.frame(ID=rownames(beta),beta)
 write.table(betatxt,"betaVALUES.txt",sep="\t",quote=FALSE,row.names=FALSE)
 
