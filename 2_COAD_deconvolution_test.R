@@ -2,6 +2,9 @@ suppressMessages(library(RnBeads))
 library("ChAMP")
 options(bitmapType="cairo")
 options(scipen=999)
+library(gplots)
+library(factoextra)
+library(RColorBrewer)
 #############################################################################################################
 # NAIVE TEST
 source("/root/myPrograms/refactor/R/refactor.R")
@@ -22,6 +25,47 @@ system( t_estimate_command )
 
 #  chnge for editted version because original takes long to read files
 results <- refactor("betaVALUES.txt",11,t=2000,stdth=0.01,out="demo_results")
+
+refactorCA = read.table("demo_results.out.components.txt")
+refactorCpG = read.table("demo_results.out.rankedlist.txt")
+
+plot(refactorCA[,1],refactorCA[,2])
+plot(res$standard_pca[,1],res$standard_pca[,2])
+
+beta = readRDS("beta.filtered.rds")
+
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
+
+all.meth.norm = beta[rownames(beta) %in% refactorCpG[1:1000,1], ]
+
+pdf("heatmap_sigCPG.pdf")
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+
+###################
+#bad outliers 
+#TCGA-D5-6536-01A-11D-1721-05
+#TCGA-D5-6924-01A-11D-1926-05
+# EDITED
+source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
+
+beta = readRDS("beta.filtered.rds")
+beta = beta[,!colnames(beta) %in% c("TCGA-D5-6536-01A-11D-1721-05","TCGA-D5-6924-01A-11D-1926-05")]
+betatxt <- data.frame(ID=rownames(beta),beta)
+write.table(betatxt,"betaVALUES_without_outliers.txt",sep="\t",quote=FALSE,row.names=FALSE)
+
+k_estimate_command = 
+paste("python /root/myPrograms/refactor/python/estimate_k_server.py --datafile betaVALUES_without_outliers.txt --max_k 15")
+system( k_estimate_command )
+system(" mv estimate_k_results.png estimate_k_beta_without_outliers.png ")
+
+t_estimate_command = 
+paste("python /root/myPrograms/refactor/python/estimate_t_server.py --datafile betaVALUES_without_outliers.txt --k 11 --numsites 5000")
+system( t_estimate_command )
+system(" mv estimate_t_results.png estimate_t_beta_without_outliers.png ")
+
+#########
 
 
 ############################################################################################################
