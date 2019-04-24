@@ -14,7 +14,7 @@ saveRDS(beta,"beta.filtered.rds")
 betatxt <- data.frame(ID=rownames(beta),beta)
 write.table(betatxt,"betaVALUES.txt",sep="\t",quote=FALSE,row.names=FALSE)
 
-k_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_k.py --datafile betaVALUES.txt --max_k 10")
+k_estimate_command = paste("python /root/myPrograms/refactor/python/estimate_k_server.py --datafile betaVALUES.txt --max_k 15")
 system( k_estimate_command )
 
 ############################################################################################################
