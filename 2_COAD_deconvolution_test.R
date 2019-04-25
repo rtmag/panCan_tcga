@@ -32,21 +32,38 @@ system(" mv estimate_t_results.png estimate_t_beta_without_normals.png ")
 source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
 
 betatxt1 = rbind(colnames(betatxt),betatxt)
-results_05 <- refactor("betaVALUES.txt",8,t=1000,stdth=0.05,out="res_without_normals_stdth.05")
-results_1 <- refactor("betaVALUES.txt",8,t=1000,stdth=0.1,out="res_without_normals_stdth.1")
+results_05 <- refactor(betatxt1,8,t=1000,stdth=0.05,out="res_without_normals_stdth.05")
+results_1 <- refactor(betatxt1,8,t=1000,stdth=0.1,out="res_without_normals_stdth.1")
 
 saveRDS(results_05,"res_without_normals_stdth.05.rds")
 saveRDS(results_1,"res_without_normals_stdth.1.rds")
+
+results_6 <- refactor(betatxt1,8,t=1000,stdth=0.6,out="res_without_normals_stdth.6")
+saveRDS(results_6,"res_without_normals_stdth.6.rds")
+
 ##############################################################################################################
+
+beta = readRDS("beta.filtered.rds")
+beta = beta[,grep("-11A-",colnames(beta),invert=TRUE)]
+
 par(mfrow=c(2,2))
 results = readRDS("res_without_normals_stdth.05.rds")
 plot(results$refactor_components[,1],results$refactor_components[,2])
+#text(results$refactor_components[,1]+50,results$refactor_components[,2], labels=colnames(beta))
+
+
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+
+pdf("heatmap_sigCPG2.pdf")
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
 
 results = readRDS("res_without_normals_stdth.1.rds")
 plot(results$refactor_components[,1],results$refactor_components[,2])
 
-beta = readRDS("beta.filtered.rds")
-beta = beta[,grep("-11A-",colnames(beta),invert=TRUE)]
+#text(results$refactor_components[,1]+50,results$refactor_components[,2], labels=colnames(beta))
+
 
 colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 
