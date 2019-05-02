@@ -16,3 +16,5 @@ pdf("test_tsne.pdf")
 plot(tsne$Y)
 dev.off()
 
+library(NbClust)
+res<-NbClust(mval.sig, distance = "euclidean",method = "kmeans")
