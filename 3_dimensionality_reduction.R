@@ -19,3 +19,5 @@ dev.off()
 library(NbClust)
 res<-NbClust(mval.sig, distance = "euclidean",method = "kmeans")
 saveRDS(res,"res.rds")
+
+KMeansSparseCluster(x, K=)
