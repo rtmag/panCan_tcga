@@ -194,3 +194,30 @@ dev.off()
 
 ##############################################################################################################
 # SURVIVAL ANALYSIS
+library(TCGAbiolinks)
+library(SummarizedExperiment)
+library(dplyr)
+library(DT)
+library(RTCGA.clinical)
+
+clinical <- GDCquery_clinic(project = "TCGA-COAD", type = "clinical")
+datatable(clinical, filter = 'top', 
+          options = list(scrollX = TRUE, keys = TRUE, pageLength = 5),  
+          rownames = FALSE)
+##################################################################################################################################
+coad_clinical = data.frame(times = clinical$days_to_last_follow_up,
+                           bcr_patient_barcode = clinical$bcr_patient_barcode,
+                           patient.vital_status = clinical$vital_status)
+
+coad_clinical$patient.vital_status = as.character(coad_clinical$patient.vital_status)
+
+coad_clinical$times[coad_clinical$patient.vital_status == "dead"] <- clinical$days_to_death[coad_clinical$patient.vital_status == "dead"]
+# alive=0 and dead=1
+coad_clinical$patient.vital_status[coad_clinical$patient.vital_status=="alive"] = 0
+coad_clinical$patient.vital_status[coad_clinical$patient.vital_status=="dead"] = 1
+
+
+
+kmTCGA(BRCAOV.survInfo, explanatory.names = "admin.disease_code",  pval = TRUE, risk.table=FALSE)
+
+
