@@ -216,8 +216,15 @@ coad_clinical$times[coad_clinical$patient.vital_status == "dead"] <- clinical$da
 coad_clinical$patient.vital_status[coad_clinical$patient.vital_status=="alive"] = 0
 coad_clinical$patient.vital_status[coad_clinical$patient.vital_status=="dead"] = 1
 
+meth.k.id <- data.frame( do.call( rbind, strsplit( names(groups), '-' ) ) )
+meth.k.id <- paste(meth.k.id[,1],meth.k.id[,2],meth.k.id[,3],sep="-")
 
+coad_clinical.meth <- coad_clinical[coad_clinical$bcr_patient_barcode %in% meth.k.id,]
+coad_clinical.meth <- data.frame(coad_clinical.meth,Methylation.group=groups[match(coad_clinical.meth$bcr_patient_barcode,meth.k.id)])
+coad_clinical.meth$Methylation.group <- as.factor(coad_clinical.meth$Methylation.group)
+coad_clinical.meth$patient.vital_status <- as.numeric(coad_clinical.meth$patient.vital_status)
 
-kmTCGA(BRCAOV.survInfo, explanatory.names = "admin.disease_code",  pval = TRUE, risk.table=FALSE)
-
+pdf("COAD_methylation_survival.pdf")
+kmTCGA(coad_clinical.meth, explanatory.names = "Methylation.group",  pval = TRUE, risk.table=FALSE)
+dev.off()
 
