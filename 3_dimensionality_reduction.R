@@ -72,10 +72,30 @@ colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
 mvaltxt <- data.frame(ID=rownames(mval),mval)
 mvaltxt = rbind(colnames(mvaltxt),mvaltxt)
-results_05 <- refactor(mvaltxt,8,t=1000,stdth=0.05,out="res_without_normals_stdth.05",numcomp=2)
+
+res_2 <- refactor(mvaltxt,2,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_3 <- refactor(mvaltxt,3,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_4 <- refactor(mvaltxt,4,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_5 <- refactor(mvaltxt,5,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_6 <- refactor(mvaltxt,6,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_7 <- refactor(mvaltxt,7,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+res_8 <- refactor(mvaltxt,8,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
+
+results= results_05
+
+
 
 results= results_05
 plot(results$refactor_components[,1],results$refactor_components[,2])
 all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
 labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+
+results_4_05 <- refactor(mvaltxt,4,t=1000,stdth=0.06,out="res_without_normals_stdth.06")
+
+results= results_4_05
+plot(results$refactor_components[,1],results$refactor_components[,2])
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+
