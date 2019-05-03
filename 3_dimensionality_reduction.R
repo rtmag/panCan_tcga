@@ -80,16 +80,87 @@ res_5 <- refactor(mvaltxt,5,t=1000,stdth=0.04,out="res_without_normals_stdth.05"
 res_6 <- refactor(mvaltxt,6,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
 res_7 <- refactor(mvaltxt,7,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
 res_8 <- refactor(mvaltxt,8,t=1000,stdth=0.04,out="res_without_normals_stdth.05")
-
-results= results_05
-
-
-
-results= results_05
+#
+results= res_2
+pdf("res2_scatterplot.pdf")
 plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res2_heatmap.pdf")
 all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
 labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+results= res_3
+pdf("res3_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res3_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+results= res_4
+pdf("res4_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res4_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+#
+results= res_5
+pdf("res5_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res5_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+results= res_6
+pdf("res6_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res6_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+results= res_7
+pdf("res7_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res7_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+results= res_8
+pdf("res8_scatterplot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2])
+dev.off()
+
+pdf("res8_heatmap.pdf")
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+dev.off()
+#
+
+
 
 results_4_05 <- refactor(mvaltxt,4,t=1000,stdth=0.06,out="res_without_normals_stdth.06")
 
