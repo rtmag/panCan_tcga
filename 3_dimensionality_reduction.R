@@ -74,6 +74,7 @@ mvaltxt <- data.frame(ID=rownames(mval),mval)
 mvaltxt = rbind(colnames(mvaltxt),mvaltxt)
 results_05 <- refactor(mvaltxt,8,t=1000,stdth=0.05,out="res_without_normals_stdth.05",numcomp=2)
 
+results= results_05
 plot(results$refactor_components[,1],results$refactor_components[,2])
 all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
