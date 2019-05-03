@@ -88,7 +88,7 @@ dev.off()
 
 pdf("res2_heatmap.pdf")
 all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
-heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+x=heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
 labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
 dev.off()
 #
@@ -170,3 +170,27 @@ all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
 heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
 labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
 
+##############################################################################################################
+saveRDS(res_2,"refactor_2K_t1000.rds")
+
+x=heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
+
+hc <- as.hclust( x$colDendrogram )
+groups=cutree( hc, k=3 )
+
+track=as.numeric(groups)
+colores=c("red","blue","green")
+clab=(colores[track])
+
+pdf("refactor_2_peasonClust_K3.pdf")
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1,ColSideColors=clab)
+dev.off()
+
+pdf("refactor_2_peasonClust_K3_scatterPLot.pdf")
+plot(results$refactor_components[,1],results$refactor_components[,2],col=clab,pch=19)
+dev.off()
+
+##############################################################################################################
+# SURVIVAL ANALYSIS
