@@ -23,9 +23,9 @@ saveRDS(res,"res.rds")
 KMeansSparseCluster(x, K=)
 
 ####################################################################
+beta = readRDS("beta_TUMORonly_tumor_vs_normal_FDR5p.rds")
 
 mval = readRDS("mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
-
 mval = mval[complete.cases(mval), ]
 
 pdf("pca_parameters.pdf")
@@ -60,5 +60,21 @@ plot(ir.pca$x[,1],ir.pca$x[,2],xlab=paste("PC1:",round(sx$importance[2,1]*100,di
      ylab=paste("PC2:",round(sx$importance[2,2]*100,digits=1),"%"),pch=19)
 #########
 dev.off()
-library(umap)
 
+############################################################################################################
+options(bitmapType="cairo")
+options(scipen=999)
+library(gplots)
+library(factoextra)
+library(RColorBrewer)
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
+
+source("https://raw.githubusercontent.com/rtmag/refactor/master/R/refactor.R")
+mvaltxt <- data.frame(ID=rownames(mval),mval)
+mvaltxt = rbind(colnames(mvaltxt),mvaltxt)
+results_05 <- refactor(mvaltxt,8,t=1000,stdth=0.05,out="res_without_normals_stdth.05",numcomp=2)
+
+plot(results$refactor_components[,1],results$refactor_components[,2])
+all.meth.norm = beta[rownames(beta) %in% results$RankedProbeNames[1:1000], ]
+heatmap.2(as.matrix(all.meth.norm),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",cexCol=.1)
