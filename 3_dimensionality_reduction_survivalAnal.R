@@ -3,10 +3,54 @@ mval.sig = readRDS("mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
 
 mval.sd = apply(mval.sig,1,sd)
 
-mval.umap = umap(mval.sig)
+mval.umap = umap(t(mval.sig))
 saveRDS(mval.umap,"umap.rds")
 mval.umap2 = umap(t(mval.sig[mval.sd>1.5,]))
+saveRDS(mval.umap2,"umap2.rds")
 
+mval.umap = readRDS("umap.rds")
+mval.umap2 = readRDS("umap2.rds")
+
+par(mfrow=c(1,2))
+plot(mval.umap$layout[,1], mval.umap$layout[,2])
+plot(mval.umap2$layout[,1], mval.umap2$layout[,2])
+
+######################################################################
+par(mfrow=c(3,1))
+# Elbow method
+fviz_nbclust(mval.umap2$layout, kmeans, method = "wss") +
+    geom_vline(xintercept = 4, linetype = 2)+
+  labs(subtitle = "Elbow method")
+
+# Silhouette method
+fviz_nbclust(mval.umap2$layout, kmeans, method = "silhouette")+
+  labs(subtitle = "Silhouette method")
+
+library(ClusterR)
+gmm = GMM(mval.umap2$layout, 4, "eucl_dist")
+
+library("mclust")
+BIC <- mclustBIC(mval.umap2$layout)
+mod1 <- Mclust(mval.umap2$layout, x = BIC)
+summary(mod1, parameters = TRUE)
+
+x = Mclust(mval.umap2$layout, 2:6)
+
+library(biganalytics)
+groups = bigkmeans(mval.umap2$layout, 5, iter.max = 10, nstart = 1, dist = "euclid")
+groups = groups$cluster
+names(groups) = rownames(mval.umap2$layout)
+
+groups=kmeans(mval.umap2$layout,3)
+groups=groups$cluster
+track = as.numeric(groups$cluster)
+groups = mod1$classification
+colores=c("red","blue","green","orange","purple")
+clab=(colores[track])
+plot(mval.umap2$layout[,1], mval.umap2$layout[,2],col=clab,pch=19)
+
+
+######################################################################
 pdf("umap.pdf")
 plot(mval.umap2$layout[,1], mval.umap2$layout[,2])
 dev.off()
@@ -226,7 +270,7 @@ coad_clinical.meth <- data.frame(coad_clinical.meth,Methylation.group=groups[mat
 coad_clinical.meth$Methylation.group <- as.factor(coad_clinical.meth$Methylation.group)
 coad_clinical.meth$patient.vital_status <- as.numeric(coad_clinical.meth$patient.vital_status)
 
-pdf("COAD_methylation_survival.pdf")
+#pdf("COAD_methylation_survival.pdf")
 kmTCGA(coad_clinical.meth, explanatory.names = "Methylation.group",  pval = TRUE, risk.table=FALSE)
-dev.off()
+#dev.off()
 
