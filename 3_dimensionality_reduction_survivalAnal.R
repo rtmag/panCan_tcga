@@ -4,6 +4,7 @@ mval.sig = readRDS("mval_TUMORonly_tumor_vs_normal_FDR5p.rds")
 mval.sd = apply(mval.sig,1,sd)
 
 mval.umap = umap(mval.sig)
+saveRDS(mval.umap,"umap.rds")
 mval.umap2 = umap(t(mval.sig[mval.sd>1.5,]))
 
 pdf("umap.pdf")
@@ -12,6 +13,7 @@ dev.off()
 
 library(Rtsne)
 tsne = Rtsne(t(mval.sig))
+saveRDS(tsne,"tsne.rds")
 pdf("test_tsne.pdf")
 plot(tsne$Y)
 dev.off()
