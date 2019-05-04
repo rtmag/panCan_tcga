@@ -149,4 +149,41 @@ for(i in 1:dim(mut_sig)[2]){
 
 saveRDS(fdr,"fdr.rds")
 
+refine_test=sumMod$coefficients$mean[-1,4]
+final_pval
 
+refine_test[names(refine_test) %in% names(final_pval)]
+pval_comp=data.frame(FullModel_pvals=refine_test[names(refine_test) %in% names(final_pval)],RefinedModel_pvals=final_pval)
+
+write.csv(pval_comp,"pval_comparison_full_vs_reduced_model.csv")
+
+#############################################################################################
+# no refined
+library(betareg)
+beta.sig = readRDS("beta_TUMORonly_tumor_vs_normal_FDR5p.rds")
+mut_sig = readRDS("~/CSI/TCGA_constrained_inference/mut_matrix_10p_filtered.rds")
+
+pval = matrix(1,nrow=dim(beta.sig)[1],ncol=dim(mut_sig)[2])
+rownames(pval) = rownames(beta.sig)
+colnames(pval) = colnames(mut_sig)
+
+cpg = beta.sig[1,]
+cpg = data.frame(cpg = cpg, mut_sig)
+for(i in 1:dim(beta.sig)[1]){
+  cpg$cpg = beta.sig[i,]
+  model <- betareg(cpg ~ ., data = cpg, link = 'logit')
+  sumMod = summary(model)
+  final_pval = sumMod$coefficients$mean[-1,4]
+  pval[i,] = final_pval
+  print(paste("analysing CpG:",i,"out of:",dim(beta.sig)[1]))
+}
+
+saveRDS(pval,"pval.rds")
+
+fdr = pval
+#FDR correction
+for(i in 1:dim(mut_sig)[2]){
+ fdr[,i] <- p.adjust(pval[,i], "BH")
+}
+
+saveRDS(fdr,"fdr.rds")
