@@ -187,11 +187,40 @@ for(i in 1:dim(mut_sig)[2]){
 }
 saveRDS(fdr,"fdr.rds")
 #############################################################################################
-colnames(fdr)[as.numeric(names(sort(table((ix[,2])))))]
+gene_sorted = sort(table((ix[,2])))
+names_genes=colnames(fdr)[as.numeric(names(sort(table((ix[,2])))))]
+
+names(gene_sorted) = names_genes
+names(tail(gene_sorted,n=25))
+
+associated_genes = gene_sorted[names(gene_sorted) %in% names(tail(gene_sorted,n=25))]
+pdf("top25_associated_genes.pdf",width=10,height=4)
+barplot(associated_genes,las=2,cex.names=1,ylab="Number of cytosines associated with a gene",cex.axis=.5)
+dev.off()
 #############################################################################################
-mx=colnames(mut_sig) %in% c("KRAS","BRAF","TP53","PCDH10","LAMA1","PLXNA4","FAT2","FBXW7","PCDH17","FRAS1")
+mx=colnames(mut_sig) %in% names(tail(gene_sorted,n=25))
 x = mut_sig[,mx]
-x2 = matrix(as.numeric(unlist(x)),ncol=10)
-rownames(x2) = rownames(mut_sig)
-colnames(x2) = colnames(x)
-heatmap.2(t(x2),trace="none")
+x[x==1] = "MUT"
+x[x==0] = ""
+
+library(ComplexHeatmap)
+col = c("MUT" = "red")
+alter_fun = list(
+    background = function(x, y, w, h) {
+        grid.rect(x, y, w-unit(0.5, "mm"), h-unit(0.5, "mm"), 
+            gp = gpar(fill = "#CCCCCC", col = NA))
+    },
+    # bug red
+    MUT = function(x, y, w, h) {
+        grid.rect(x, y, w-unit(0.5, "mm"), h-unit(0.5, "mm"), 
+            gp = gpar(fill = col["MUT"], col = NA))
+    }
+)
+
+heatmap_legend_param = list(title = "Alterations", at = c( "MUT"), 
+        labels = c("Mutation"))
+pdf("oncoprint.pdf")
+oncoPrint(t(x),
+    alter_fun = alter_fun, col = col, 
+     heatmap_legend_param = heatmap_legend_param)
+dev.off()
