@@ -185,5 +185,13 @@ fdr = pval
 for(i in 1:dim(mut_sig)[2]){
  fdr[,i] <- p.adjust(pval[,i], "BH")
 }
-
 saveRDS(fdr,"fdr.rds")
+#############################################################################################
+colnames(fdr)[as.numeric(names(sort(table((ix[,2])))))]
+#############################################################################################
+mx=colnames(mut_sig) %in% c("KRAS","BRAF","TP53","PCDH10","LAMA1","PLXNA4","FAT2","FBXW7","PCDH17","FRAS1")
+x = mut_sig[,mx]
+x2 = matrix(as.numeric(unlist(x)),ncol=10)
+rownames(x2) = rownames(mut_sig)
+colnames(x2) = colnames(x)
+heatmap.2(t(x2),trace="none")
