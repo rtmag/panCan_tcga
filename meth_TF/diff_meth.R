@@ -63,10 +63,21 @@ library("IlluminaHumanMethylation450kanno.ilmn12.hg19")
 data("IlluminaHumanMethylation450kanno.ilmn12.hg19")
 annotation.table = getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
 
-meth.norm.sig$mean.diff>0
+hi_normal = meth.norm[dmc_table$mean.diff>.25 & dmc_table$diffmeth.p.adj.fdr<0.05,]
+hi_normal= hi_normal[complete.cases(hi_normal),]
+hi_normal= hi_normal[apply(hi_normal,1,sd)>0,]
 
-dim( annotation.table[rownames(annotation.table) %in% rownames(meth.norm.sig),]  )
+hi_tumor = meth.norm[dmc_table$mean.diff<(-.25) & dmc_table$diffmeth.p.adj.fdr<0.05,]
+hi_tumor= hi_tumor[complete.cases(hi_tumor),]
+hi_tumor= hi_tumor[apply(hi_tumor,1,sd)>0,]
 
+hi_tumor_anno = annotation.table[rownames(annotation.table) %in% rownames(hi_tumor),c(1,2,2)]
+hi_tumor_anno[,2] = hi_tumor_anno[,2]-50
+hi_tumor_anno[,3] = hi_tumor_anno[,3]+50
+write.table(hi_tumor_anno, "hi_tumor_cpg.bed",sep="\t",quote=F,row.names=F,col.names=F)
 
-anno_c1= annotation.table[rownames(annotation.table) %in% c1,c(1,2,2)]
-anno_c1[,2] = anno_c1[,2]-150
+hi_normal_anno = annotation.table[rownames(annotation.table) %in% rownames(hi_normal),c(1,2,2)]
+hi_normal_anno[,2] = hi_normal_anno[,2]-50
+hi_normal_anno[,3] = hi_normal_anno[,3]+50
+write.table(hi_normal_anno, "hi_normal_cpg.bed.bed",sep="\t",quote=F,row.names=F,col.names=F)
+
