@@ -19,3 +19,4 @@ dmc <- rnb.execute.computeDiffMeth(rnb.set.norm_noNormal,pheno.cols=c("Tumor"))
 comparison <- get.comparisons(dmc)[1]
 dmc_table <-get.table(dmc, comparison, "sites", return.data.frame=TRUE)
 
+table(abs(dmc_table$mean.diff)>.25 & dmc_table$diffmeth.p.adj.fdr<0.05)
