@@ -57,6 +57,21 @@ abline(h=-log10(0.05),lty = 2,col="grey")
 legend("topright", paste("NORMAL",length(which(dmc_table$mean.diff>.25 & dmc_table$diffmeth.p.adj.fdr<0.05))), bty="n") 
 legend("topleft", paste("TUMOR",length(which(dmc_table$mean.diff<(-.25) & dmc_table$diffmeth.p.adj.fdr<0.05))), bty="n") 
 dev.off()
+
+
+hc <- as.hclust( x$colDendrogram )
+groups=cutree( hc, k=6 )
+
+track=as.numeric(groups)
+colores=c("red","blue","green","orange","purple","black")
+clab=(colores[track])
+png("heatmap_diff_TUMOR_VS_NORMAL_FDR5p_6K.png",width= 3.25,
+  height= 3.25,units="in",
+  res=1200,pointsize=4)
+ heatmap.2(as.matrix(meth.norm.sig),col=colors,scale="none", trace="none",distfun = function(x) get_dist(x,method="pearson"),srtCol=90,
+labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",ColSideColors=clab)
+dev.off()
+
 ##########
 saveRDS(x,"heatmap_diff_TUMOR_VS_NORMAL_x_clust.rds")
 library("IlluminaHumanMethylation450kanno.ilmn12.hg19")
