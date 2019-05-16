@@ -22,6 +22,11 @@ library(RColorBrewer)
 
 meth.norm = meth(rnb.set.norm)
 meth.norm.sig=meth.norm[abs(dmc_table$mean.diff)>.25 & dmc_table$diffmeth.p.adj.fdr<0.05,]
+dim(meth.norm.sig)
+meth.norm.sig= meth.norm.sig[complete.cases(meth.norm.sig),]
+dim(meth.norm.sig)
+meth.norm.sig= meth.norm.sig[apply(meth.norm.sig,1,sd)>0,]
+dim(meth.norm.sig)
 
 track= TUMOR 
 track[track=="TUMOR"]=1
@@ -29,6 +34,8 @@ track[track=="NORMAL"]=2
 track=as.numeric(track)
 colores=c("red","white")
 clab=as.character(colores[track])
+
+colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 
 png("heatmap_diff_TUMOR_VS_NORMAL_FDR5p.png",width= 3.25,
   height= 3.25,units="in",
@@ -38,3 +45,5 @@ labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",ColSideColors=cl
 legend("topright",legend=c("TUMOR","NORMAL"),fill=c("red","white"), border=T, bty="n" )
 dev.off()
 ##########
+
+
