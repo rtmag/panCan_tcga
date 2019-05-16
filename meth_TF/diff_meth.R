@@ -45,5 +45,5 @@ labRow = FALSE,xlab="", ylab="CpGs",key.title="Methylation lvl",ColSideColors=cl
 legend("topright",legend=c("TUMOR","NORMAL"),fill=c("red","white"), border=T, bty="n" )
 dev.off()
 ##########
-
+saveRDS(x,"heatmap_diff_TUMOR_VS_NORMAL_x_clust.rds")
 
