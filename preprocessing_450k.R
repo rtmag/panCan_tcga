@@ -95,7 +95,8 @@ for(i in 1:length(projects)){
   write.csv(mut.file.p53,paste(projects[i],"/",projects[i],"_TP53_mutation_info_withNormal.csv",sep=""),row.names=F)
   
   # CNA table
-  CNA <- paste(panCan.dir[i],"/data_CNA.txt",sep="")
+  CNA <- paste(panCan.dir[grep(tolower(projects[i]),panCan.dir)],"/data_CNA.txt",sep="")
+  #CNA <- paste(panCan.dir[i],"/data_CNA.txt",sep="")
   CNA <- read.table(CNA,sep="\t",header=TRUE,quote="")
   CNA <- CNA[!duplicated(CNA$Hugo_Symbol), ]
   rownames(CNA) <- CNA$Hugo_Symbol
@@ -106,7 +107,8 @@ for(i in 1:length(projects)){
   write.csv(CNA,paste(projects[i],"/",projects[i],"_CNA_matrix.csv",sep=""))
 
   # Clinical table
-  clinical <- paste(panCan.dir[i],"/data_clinical_patient.txt",sep="")
+  clinical <- paste(panCan.dir[grep(tolower(projects[i]),panCan.dir)],"/data_clinical_patient.txt",sep="")
+  #clinical <- paste(panCan.dir[i],"/data_clinical_patient.txt",sep="")
   clinical <- paste("tail -n+5",clinical,"|cut -f 1,5,6,7,8,9,10,11,26,27,28,29,30")
   clinical <- read.table(pipe(clinical),sep="\t",header=T,quote="")
   clinical.patient.id <- data.frame( do.call( rbind, strsplit( mut.id.withMutation, '-' ) ) )
