@@ -34,7 +34,7 @@ for(i in 1:length(normal_sample_number)){
          #make dir
      command = paste0("mkdir /root/TCGA/TF_METH/",normal_sample_number[i])
      system(command)
-     command = paste0("/root/TCGA/TF_METH/",normal_sample_number[i]"/rnb.set.norm.filtered.RData")
+     command = paste0("/root/TCGA/TF_METH/",normal_sample_number[i],"/rnb.set.norm.filtered.RData")
      save.rnb.set(rnb.set.filtered,path=command)
 
      dmc <- rnb.execute.computeDiffMeth(rnb.set.filtered, pheno.cols=c("Tumor") )
