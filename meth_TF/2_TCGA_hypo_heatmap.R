@@ -18,9 +18,8 @@ for(i in 1:length(tcga.dir)){
     # read rdata
     path <- paste0(tcga.dir[i],"/","rnb.set.norm.filtered.RData.zip")
     rnb.set.norm=load.rnb.set(path)
+    meth.norm = meth(rnb.set.norm,row.names=T)
 
-    
-    
     # hypo hyper cpg
     path <- paste0(tcga.dir[i],"/",tcga_name,"_dmc_table.csv")
     meth_table <- read.csv(path)
