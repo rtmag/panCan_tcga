@@ -76,8 +76,8 @@ for(i in 1:length(tcga.dir)){
     dev.off()
     
     #do Volcano
-    path <- paste0(tcga.dir[i],"/",tcga_name,"_Tumor_VS_Normal_volcanoPlot.png")
-    pdf("volcano_diff_TUMOR_VS_NORMAL.pdf")
+    path <- paste0(tcga.dir[i],"/",tcga_name,"_Tumor_VS_Normal_volcanoPlot.pdf")
+    pdf(path)
               smoothScatter(dmc_table$mean.diff,-log10(dmc_table$diffmeth.p.adj.fdr),
               ylab=expression('-Log'[10]*' Q-values'), xlab="Differential Beta-score" )
               abline(v=-.25,lty = 2,col="grey")
