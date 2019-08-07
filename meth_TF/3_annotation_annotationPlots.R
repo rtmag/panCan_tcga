@@ -30,3 +30,30 @@ for(i in 1:length(tcga.dir)){
                      )        
     system(command)
   }
+
+par(mfrow=c(1,2))
+res=read.table(pipe("more COAD_hi_normal_cpg.annStats |cut -f1,2,4"), sep="\t",header=F)
+i1 = which(res[,1]=="Annotation")[2]+1
+i2 = dim(res)[1]
+res = res[ i1:i2,]
+tdown = as.numeric(as.character(res[,2]))
+names(tdown) = res[,1]
+names(tdown) = paste(names(tdown)," ",round(tdown/sum(tdown)*100,digits=2),"%",sep="")
+tdownfin = tdown[round(tdown/sum(tdown)*100,digits=2)>=2]
+other = sum(tdown[round(tdown/sum(tdown)*100,digits=2)<2])
+names(other) = paste0("Other ",round(other/sum(tdown)*100,digits=2),"%")
+tdownfin = c(tdownfin,other)
+pie(sort(tdownfin), main="Normal",cex=.8)
+
+res=read.table(pipe("more COAD_hi_tumor_cpg.annStats |cut -f1,2,4"), sep="\t",header=F)
+i1 = which(res[,1]=="Annotation")[2]+1
+i2 = dim(res)[1]
+res = res[ i1:i2,]
+tdown = as.numeric(as.character(res[,2]))
+names(tdown) = res[,1]
+names(tdown) = paste(names(tdown)," ",round(tdown/sum(tdown)*100,digits=2),"%",sep="")
+tdownfin = tdown[round(tdown/sum(tdown)*100,digits=2)>=2]
+other = sum(tdown[round(tdown/sum(tdown)*100,digits=2)<2])
+names(other) = paste0("Other ",round(other/sum(tdown)*100,digits=2),"%")
+tdownfin = c(tdownfin,other)
+pie(sort(tdownfin), main="Tumor",cex=.8)
