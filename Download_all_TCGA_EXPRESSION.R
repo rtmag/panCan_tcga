@@ -40,3 +40,13 @@ for(file in dir("./GDCdata/",pattern = "counts.gz", recursive = T)){
     match.file.cases.all <- rbind(match.file.cases.all,match.file.cases)
     tryCatch(GDCdownload(query, method = "api", files.per.chunk = 20),
              error = function(e) GDCdownload(query, method = "client"))
+
+             #putting all together
+             paste -d '=' *.counts | sed 's/=\S*//g' > ../COAD_MATRIX_pre.txt
+              ls -1 > ../COAD_file_names.txt
+             
+             x = read.table("COAD_MATRIX_pre.txt",sep="\t",row.names=1,header=FALSE)
+             xname = read.table("COAD_file_names.txt",sep="\t")
+             colnames(x) = xname[,1]
+             
+             
