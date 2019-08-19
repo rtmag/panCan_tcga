@@ -25,3 +25,17 @@ system("mkdir TCGA_RNA_SEQ_counts/"
 for(file in dir("./TCGA_RNA_SEQ_counts/",pattern = "counts.gz", recursive = T)){
     TCGAbiolinks::move(file,basename(file))
 }
+
+       
+       projects[11]
+       
+        query <- GDCquery(project = projects[11],
+                  data.category = "Transcriptome Profiling",
+                  data.type = "Gene Expression Quantification",
+                  workflow.type = "HTSeq - Counts",
+                  )
+    match.file.cases <- getResults(query,cols=c("cases","file_name"))
+    match.file.cases$project <- proj
+    match.file.cases.all <- rbind(match.file.cases.all,match.file.cases)
+    tryCatch(GDCdownload(query, method = "api", files.per.chunk = 20),
+             error = function(e) GDCdownload(query, method = "client"))
