@@ -21,9 +21,10 @@ for(proj in projects){
 # This will create a map between idat file name, cases (barcode) and project
 readr::write_tsv(match.file.cases.all, path =  "RNA_SEQ_filename_case.txt")
 # code to move all files to local folder
-system("mkdir TCGA_RNA_SEQ_counts/"
-for(file in dir("./TCGA_RNA_SEQ_counts/",pattern = "counts.gz", recursive = T)){
-    TCGAbiolinks::move(file,basename(file))
+system("mkdir TCGA_RNA_SEQ_counts/")
+for(file in dir("./GDCdata/",pattern = "counts.gz", recursive = T)){
+#    TCGAbiolinks::move(file,paste0("TCGA_RNA_SEQ_counts/",basename(file)))
+    command <- paste0(file," TCGA_RNA_SEQ_counts/")
 }
 
        
