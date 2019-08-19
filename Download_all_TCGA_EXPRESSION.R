@@ -48,5 +48,39 @@ for(file in dir("./GDCdata/",pattern = "counts.gz", recursive = T)){
              x = read.table("COAD_MATRIX_pre.txt",sep="\t",row.names=1,header=FALSE)
              xname = read.table("COAD_file_names.txt",sep="\t")
              colnames(x) = xname[,1]
+             x = x[1:(dim(x)[1]-5),]
              
              
+
+source("https://bioconductor.org/biocLite.R")
+biocLite("org.Hs.eg.db")
+biocLite("clusterProfiler")
+library(clusterProfiler)
+library(org.Hs.eg.db)
+             
+gene.df <- bitr(rownames(x), fromType = "ENSEMBL",
+                        toType = c( "ENTREZID", "SYMBOL"),
+                        OrgDb = org.Hs.eg.db)
+             
+getBM(attributes='hgnc_symbol', 
+      filters = 'ensembl_gene_id', 
+      values = rownames(x), 
+      mart = ensembl)
+             
+
+
+library(ensembldb)
+library("EnsDb.Hsapiens.v86")   
+edb <- EnsDb.Hsapiens.v86
+tx <- genes(edb, columns=c("gene_id", "gene_name"))
+tx=data.frame(gene_id=tx$gene_id, gene_name=tx$gene_name)
+
+             
+xx = gsub("\\..+","",rownames(x),perl=T)
+
+rownames(x)=make.names(as.character(tx[ match(xx,tx[,1]),2]),unique=T)
+             
+ link = read.table("RNA_SEQ_filename_case.txt",sep="\t",header=T,stringsAsFactors=F)
+link$file_name = gsub(".gz","",link$file_name)
+colnames(x) = link[match(colnames(x), link$file_name),1]
+saveRDS(x,"COAD_RNA_SEQ.rds")
