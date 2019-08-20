@@ -7,24 +7,41 @@ options(scipen=999)
 library(gplots)
 library(factoextra)
 library(RColorBrewer)
+library(DESeq2)
 
+exp <- readRDS("~/CSI/TCGA/TF_meth_TCGA/COAD_RNA_SEQ.rds")
+exp <- exp[rowSums(exp)>0,]
+
+design<-data.frame(group=1:dim(exp)[2])
+dds <- DESeqDataSetFromMatrix(
+       countData = exp,
+       colData = design,
+       design = ~ group)
+
+dLRT <- DESeq(dds, test="LRT", reduced=~1)
+dLRT_vsd <- varianceStabilizingTransformation(dLRT)
+
+
+# Patient Link RNA - METH
 patient.anno <- read.csv("COAD_TP53_mutation_info_withNormal.csv",stringsAsFactors=F)
-exp <- read.table("data_RNA_Seq_v2_mRNA_median_Zscores.txt",sep="\t",header=T,stringsAsFactors=F)
+
+patient_parced <- gsub("\\-...\\-....\\-..$","",patient.anno[,1],perl=TRUE)
+rna_parced <- gsub("\\-...\\-....\\-..$","",colnames(exp),perl=TRUE)
+patient.anno = patient.anno[patient_parced %in% rna_parced,]
+patient_parced <- gsub("\\-...\\-....\\-..$","",patient.anno[,1],perl=TRUE)
+
+ix = match(patient_parced, rna_parced)
+
+exp_meth = exp[,ix]
+exp_norm <- exp_meth[,patient.anno$Variant_Classification=="NORMAL"]
+exp_tumor <- exp_meth[,patient.anno$Variant_Classification!="NORMAL"]
+
+################################################################################################
 normal <- read.table("COAD_hi_normal_cpg.genes",sep="\t",header=F,stringsAsFactors=F)
 tumor <- read.table("COAD_hi_tumor_cpg.genes",sep="\t",header=F,stringsAsFactors=F)
 normal <- normal[,1]
 tumor <- tumor[,1]
 
-rownames(exp) = make.names(exp[,1],unique=T)
-exp = exp[,3:dim(exp)[2]]
-
-patient_parced <- gsub(".\\-...\\-....\\-..$","",patient.anno[,1],perl=TRUE)
-patient_parced <- gsub("-",".",patient_parced,perl=TRUE)
-
-ix <- match(colnames(exp), patient_parced)
-
-exp = exp[,!is.na(ix)]
-#patient.anno[ix[!is.na(ix)],]
 
 colors <- rev(colorRampPalette( (brewer.pal(9, "RdBu")) )(9))
 sig_vsd = exp[rownames(exp) %in% tumor,]
